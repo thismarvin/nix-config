@@ -6,24 +6,17 @@
   home.username = "marvin";
   home.homeDirectory = "/home/marvin";
 
-  home.stateVersion = "21.05";
-
-  nixpkgs.overlays = [
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-    }))
-  ];
+  # home.stateVersion = "21.05";
+  home.stateVersion = "20.09";
 
   home.packages = with pkgs; [
     firefox
     kitty
     neovim-nightly
-    zsh
     nushell
 
     pavucontrol
 
-    gcc
     git
     gnumake
 
@@ -97,7 +90,7 @@
       color17 = "#db4b4b";
     };
   };
- 
+
   programs.zsh = {
     enable = true;
     dotDir = ".config/zsh";
@@ -111,6 +104,7 @@
       "l" = "exa --icons";
       "ll" = "exa -l --icons";
       "lla" = "exa -la --icons";
+      "n" = "nnn -Reo";
     }; 
   };
 
@@ -128,10 +122,10 @@
       ];
 
       time = {
-	disabled = false;
-	format = "\\[[$time]($style)\\]";
-	style = "yellow";
-	time_format = "%T";
+        disabled = false;
+        format = "\\[[$time]($style)\\]";
+        style = "yellow";
+        time_format = "%T";
       };
 
       directory = {
@@ -167,14 +161,5 @@
     };
   };
 
- #  wayland.windowManager.sway = {
- #    enable = true;
- #  };
-
- #  xdg = {
- #    enable = true;
- #    configFile = {
- #      "sway/config".source = /etc/dotfiles/sway/config;
- #    };
- #  };
+  xdg.configFile."nvim/init.lua".source = ./dotfiles/nvim/init.lua;
 }
