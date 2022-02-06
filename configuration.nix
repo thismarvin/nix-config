@@ -1,10 +1,9 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    ./hardware-configuration.nix
+  ];
 
   nix = {
     package = pkgs.nixUnstable;
@@ -15,75 +14,71 @@
 
   nixpkgs = {
     config = {
-      allowUnfree = true;
+      # allowUnfree = true;
     };
   };
 
-  # Use the GRUB 2 boot loader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.version = 2;
-  boot.loader.grub.device = "/dev/sda";
+  # Use the systemd-boot EFI boot loader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "thinkpad";
+  networking.hostName = "nixos";
   networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/Chicago";
 
+  # The global useDHCP flag is deprecated, therefore explicitly set to false here.
+  # Per-interface useDHCP will be mandatory in the future, so this generated config
+  # replicates the default behaviour.
+  networking.useDHCP = false;
+  networking.interfaces.enp2s0.useDHCP = true;
+
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
   # Enable the X11 windowing system.
-  # services.xserver.enable = true;
-  # services.xserver.layout = "us";
+  services.xserver.enable = true;
 
-  # services.xserver.windowManager.i3.enable = true;
+  # Enable XFCE
+  services.xserver.desktopManager.xfce.enable = true;
+  programs.nm-applet.enable = true;
 
-  # Wayland
-  programs.sway = {
+  # Configure keymap in X11
+  services.xserver.layout = "us";
+
+  # Enable Sound
+  services.pipewire = {
     enable = true;
-    extraPackages = with pkgs; [
-      swaylock
-      swayidle
-      waybar
-      mako
-      dmenu
-    ];
-  };
-
-  environment = {
-    etc = {
-      "sway/config".source = ./dotfiles/sway/config;
+    alsa = {
+      enable = true;
+      support32Bit = true;
+    };
+    pulse = {
+      enable = true;
+    };
+    jack = {
+      enable = true;
     };
   };
 
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio = {
-    enable = true;
-    support32Bit = true;
-  };
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.marvin = {
     isNormalUser = true;
-    createHome = true;
-    extraGroups = [ "wheel" "networkmanager" ]; 
-    shell = pkgs.zsh;
+    extraGroups = [ "wheel" "networkmanager" ];
+    shell = pkgs.nushell;
   };
 
   # List packages installed in system profile.
   environment.systemPackages = with pkgs; [
-   wget
-   zsh
+    curl
+    neovim
   ];
 
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  system.stateVersion = "21.05";
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "21.11"; # Did you read the comment?
 }
-
