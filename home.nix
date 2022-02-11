@@ -10,6 +10,7 @@
 
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
+    # neovim
     # nxengine-evo # Unfree
     bat
     bitwarden
@@ -37,7 +38,6 @@
     mpv
     mupen64plus
     mypaint
-    neovim
     nnn
     nushell
     pavucontrol
@@ -112,6 +112,20 @@
 	};
       };
     };
+    neovim = {
+      enable = true;
+      plugins = with pkgs.vimPlugins; [
+	comment-nvim
+	editorconfig-nvim
+	lsp_extensions-nvim
+	nvim-lspconfig
+	nvim-treesitter
+	telescope-nvim
+      ];
+      extraConfig = ''
+        lua require("stable")
+      '';
+    };
     helix = {
       enable = true;
       settings = {
@@ -131,6 +145,7 @@
       };   
     };
   };
+  xdg.configFile."nvim/lua/stable.lua".source = ./dotfiles/stable.lua;
 
   # This value determines the Home Manager release that your configuration is compatible with.
   # This helps avoid breakage when a new Home Manager release introduces backwards incompatible
